@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up | Brewed by Rhuie_Coffee Shop</title>
+  <link rel="stylesheet" href="user.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f0e3;
+      color: #333;
+    }
+
+    header {
+      background-color: #6f4e37;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+      flex-direction: column;
+    }
+
+    .signup-container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .signup-container h2 {
+      color: #6f4e37;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #6f4e37;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #8b5e3c;
+    }
+
+    .back-link {
+      margin-top: 15px;
+      display: inline-block;
+      color: #6f4e37;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      background-color: #6f4e37;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>☕ Brewed by Rhuie_Coffee Shop</h1>
+    <p>Join our community and stay updated with our latest brews!</p>
+  </header>
+
+  <main>
+    <div class="signup-container">
+      <h2>Create an Account</h2>
+      <form id="signupForm" action="signup.php" method="POST">
+    <input type="text" id="name" name="full_name" placeholder="Full Name" required>
+    <input type="email" id="email" name="email" placeholder="Email Address" required>
+    <input type="password" id="password" name="password" placeholder="Password" required>
+    <input type="password" id="confirmPassword" name="confirm" placeholder="Confirm Password" required>
+    <button type="submit">Sign Up</button>
+</form>
+<a href="index.html" class="back-link">← Back to Home</a>
+  </main>
+
+  <footer>
+    &copy; 2025 Brewed by Rhuie_Coffee Shop | Brewed with ❤️ by You
+  </footer>
+
+  <script>
+    function validateForm() {
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      if (password !== confirm) {
+        alert("Passwords do not match. Please try again.");
+        return false;
+      }
+
+      alert("Sign Up Successful! Welcome to Brewed by Rhuie ☕");
+      return true;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brewed by Rhuie_Coffee Shop | Order & Payment</title>
+  <link rel="stylesheet" href="user.css">
+  <style>
+    /* ... existing styles ... */
+    .orders, .receipt-modal, .payment-modal { box-sizing: border-box; }
+    .orders {
+      background: #fff;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: 40px auto 24px auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 24px;
+    }
+    .order-list { list-style: none; padding: 0; }
+    .order-item {
+      display: flex; align-items: center; margin-bottom: 24px;
+      background: #f9f9f9; border-radius: 6px; padding: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+    .order-item img {
+      width: 80px; height: 80px; object-fit: cover;
+      border-radius: 8px; margin-right: 18px; border: 2px solid #e4c590;
+    }
+    .order-details { flex-grow: 1; }
+    .order-details strong { font-size: 1.1em; color: #A0522D; }
+    .order-details .desc { color: #666; font-size: 0.97em; display: block; }
+    .price { font-weight: bold; color: #7B3F00; font-size: 1.1em; margin: 8px 0; display: block; }
+    .pay-btn {
+      background: #dcbc8e; color: #fff; border: none; border-radius: 4px;
+      padding: 8px 14px; font-size: 0.98em; cursor: pointer; transition: background 0.2s;
+    }
+    .pay-btn:hover { background: #a47a53; }
+    /* Modal Styling */
+    .modal, .receipt-modal {
+      display: none; position: fixed; z-index: 10;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.28);
+      align-items: center; justify-content: center;
+    }
+    .modal-content, .receipt-content {
+      background: #fff; border-radius: 8px;
+      padding: 32px 24px; max-width: 350px; text-align: center; position: relative;
+    }
+    .close-btn {
+      position: absolute; top: 12px; right: 18px;
+      background: none; border: none; font-size: 1.3em; cursor: pointer; color: #7B3F00;
+    }
+    .modal-content h3, .receipt-content h3 { color: #7B3F00; margin-bottom: 12px; }
+    .pay-now, .receipt-content button {
+      background: #7B3F00; color: #fff; border: none; border-radius: 4px;
+      padding: 8px 20px; font-size: 1em; cursor: pointer; transition: background 0.2s;
+    }
+    .pay-now:hover, .receipt-content button:hover { background: #a47a53; }
+    .payment-method-select {
+      padding: 8px; border-radius: 4px; margin-bottom: 16px; border: 1px solid #ccc;
+      width: 100%; font-size: 1em;
+    }
+    .payment-input {
+      padding: 8px; border-radius: 4px; margin-bottom: 16px; border: 1px solid #ccc;
+      width: 90%; font-size: 1em;
+      display: none;
+    }
+    .receipt-list { text-align: left; margin: 0 auto 16px auto; width: 80%; }
+    .receipt-list dt { font-weight: bold; }
+    .receipt-list dd { margin: 0 0 8px 0; }
+    /* Processed Message */
+    .order-processed {
+      background: #dcbc8e;
+      color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      padding: 18px 22px;
+      margin: 0 auto 18px auto;
+      max-width: 400px;
+      font-size: 1.15em;
+      text-align: center;
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 10%;
+      transform: translate(-50%, 0);
+      z-index: 15;
+      animation: fadeIn 0.4s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -40px);}
+      to   { opacity: 1; transform: translate(-50%, 0);}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>☕ Brewed by Rhuie_Coffee Shop</h1>
+    <p>Your cozy corner for freshly brewed happiness</p>
+    <button class="signup-btn" onclick="signUp()">Sign Up</button>
+  </header>
+  <nav>
+    <a href="user.html">Home</a>
+    <a href="#">Menu</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
+  </nav>
+  <main>
+    <section class="intro">
+      <h2>Welcome to Brewed by Rhuie!</h2>
+      <p>At Brewed by Rhuie, we serve more than just coffee — we serve comfort, connection, and community. 
+         Sit back, relax, and enjoy a cup of your favorite brew.</p>
+    </section>
+    <!-- Order Section -->
+    <section class="orders" id="orders">
+      <h2>Order Your Coffee</h2>
+      <ul class="order-list">
+        <li class="order-item">
+          <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=80&q=80" alt="Caramel Macchiato">
+          <div class="order-details">
+            <strong>Caramel Macchiato</strong>
+            <span class="desc">Sweet, smooth, and creamy delight.</span>
+            <span class="price">₱160.00</span>
+            <button class="pay-btn" data-item="Caramel Macchiato" data-price="160.00">Pay</button>
+          </div>
+        </li>
+        <li class="order-item">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=80&q=80" alt="Cold Brew">
+          <div class="order-details">
+            <strong>Cold Brew</strong>
+            <span class="desc">Slow-brewed perfection with rich flavor.</span>
+            <span class="price">₱140.00</span>
+            <button class="pay-btn" data-item="Cold Brew" data-price="140.00">Pay</button>
+          </div>
+        </li>
+        <li class="order-item">
+          <img src="EXPRESSO.jpg" alt="Espresso">
+          <div class="order-details">
+            <strong>Espresso</strong>
+            <span class="desc">Bold, classic, and energizing shot of coffee.</span>
+            <span class="price">₱100.00</span>
+            <button class="pay-btn" data-item="Espresso" data-price="100.00">Pay</button>
+          </div>
+        </li>
+        <li class="order-item">
+          <img src="CAPPUCINO.jpg" alt="Cappuccino">
+          <div class="order-details">
+            <strong>Cappuccino</strong>
+            <span class="desc">A perfect blend of espresso, steamed milk, and foam.</span>
+            <span class="price">₱150.00</span>
+            <button class="pay-btn" data-item="Cappuccino" data-price="150.00">Pay</button>
+          </div>
+        </li>
+      </ul>
+    </section>
+    <!-- Processed Message -->
+    <div class="order-processed" id="orderProcessed">
+      <span id="processedText"></span>
+    </div>
+    <!-- /Order Section -->
+    <section class="about">
+      <h2>About Us</h2>
+      <p>Founded in 2025, Brewed by Rhuie_Coffee Shop started as a small dream to bring the aroma of happiness
+         to every cup. We believe every sip should tell a story of passion and perfection.</p>
+    </section>
+  </main>
+  <!-- Payment Modal -->
+  <div class="modal" id="paymentModal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+      <h3 id="modalTitle"></h3>
+      <p id="modalPrice"></p>
+      <select class="payment-method-select" id="paymentMethod">
+        <option value="" disabled selected>Select Payment Method</option>
+        <option value="Cash">Cash</option>
+        <option value="GCash">GCash</option>
+        <option value="Card">Card</option>
+      </select>
+      <!-- Transaction Number Fields -->
+      <input type="text" id="transactionInput" class="payment-input" placeholder="Enter transaction/reference number" maxlength="25"/>
+      <button class="pay-now" onclick="payNow()">Pay Now</button>
+    </div>
+  </div>
+  <!-- Receipt Modal -->
+  <div class="receipt-modal" id="receiptModal">
+    <div class="receipt-content">
+      <button class="close-btn" onclick="closeReceiptModal()">&times;</button>
+      <h3>Order Receipt</h3>
+      <dl class="receipt-list">
+        <dt>Coffee:</dt>
+        <dd id="receiptCoffee"></dd>
+        <dt>Description:</dt>
+        <dd id="receiptDesc"></dd>
+        <dt>Price:</dt>
+        <dd id="receiptPrice"></dd>
+        <dt>Payment Method:</dt>
+        <dd id="receiptMethod"></dd>
+        <dt id="receiptTransLabel" style="display:none;">Transaction/Reference #:</dt>
+        <dd id="receiptTransNum"></dd>
+      </dl>
+      <button onclick="closeReceiptModal()">Done</button>
+    </div>
+  </div>
+  <footer>
+    &copy; 2025 Brewed by Rhuie_Coffee Shop | Brewed with ❤️ by You
+  </footer>
+  <script>
+    // Scroll to order section
+    function scrollToOrder() {
+      document.getElementById('orders').scrollIntoView({ behavior: 'smooth' });
+    }
+    function signUp() {
+      window.location.href = "sign up.html";
+    }
+
+    // Payment Modal Logic
+    const modal = document.getElementById('paymentModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPrice = document.getElementById('modalPrice');
+    const paymentMethod = document.getElementById('paymentMethod');
+    const transactionInput = document.getElementById('transactionInput');
+    let selectedItem = '';
+    let selectedPrice = '';
+    let selectedDesc = '';
+
+    document.querySelectorAll('.pay-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        selectedItem = this.getAttribute('data-item');
+        selectedPrice = this.getAttribute('data-price');
+        selectedDesc = this.parentNode.querySelector('.desc').textContent;
+        modalTitle.textContent = `Pay for ${selectedItem}`;
+        modalPrice.textContent = `Amount: ₱${selectedPrice}`;
+        paymentMethod.selectedIndex = 0;
+        transactionInput.style.display = 'none';
+        transactionInput.value = '';
+        modal.style.display = 'flex';
+      });
+    });
+
+    paymentMethod.addEventListener('change', function() {
+      // Show input for GCash and Card only
+      if (this.value === 'GCash' || this.value === 'Card') {
+        transactionInput.style.display = 'block';
+        transactionInput.placeholder = this.value === 'GCash' ? "Enter GCash reference number" : "Enter Card transaction number";
+      } else {
+        transactionInput.style.display = 'none';
+        transactionInput.value = '';
+      }
+    });
+
+    function closePaymentModal() {
+      modal.style.display = 'none';
+    }
+
+    // Receipt Modal Logic
+    const receiptModal = document.getElementById('receiptModal');
+    const receiptCoffee = document.getElementById('receiptCoffee');
+    const receiptPrice = document.getElementById('receiptPrice');
+    const receiptMethod = document.getElementById('receiptMethod');
+    const receiptDesc = document.getElementById('receiptDesc');
+    const receiptTransNum = document.getElementById('receiptTransNum');
+    const receiptTransLabel = document.getElementById('receiptTransLabel');
+    const orderProcessed = document.getElementById('orderProcessed');
+    const processedText = document.getElementById('processedText');
+
+    function payNow() {
+      const method = paymentMethod.value;
+      const transNum = transactionInput.value.trim();
+
+      if (!method) {
+        alert('Please select a payment method.');
+        return;
+      }
+      // Require transaction number for GCash and Card
+      if ((method === 'GCash' || method === 'Card') && !transNum) {
+        alert('Please enter your ' + (method === 'GCash' ? "GCash reference number" : "Card transaction number") + '.');
+        return;
+      }
+      closePaymentModal();
+      // Fill receipt
+      receiptCoffee.textContent = selectedItem;
+      receiptDesc.textContent = selectedDesc;
+      receiptPrice.textContent = `₱${selectedPrice}`;
+      receiptMethod.textContent = method;
+      receiptTransNum.textContent = (method === 'GCash' || method === 'Card') ? transNum : '';
+      receiptTransLabel.style.display = (method === 'GCash' || method === 'Card') ? 'block' : 'none';
+      receiptTransNum.style.display = (method === 'GCash' || method === 'Card') ? 'block' : 'none';
+      // Show processed message first
+      showProcessedMessage(selectedItem);
+      // Show receipt after short delay
+      setTimeout(function() {
+        receiptModal.style.display = 'flex';
+      }, 1400);
+    }
+    // After successful payment, before showing the receipt:
+fetch('process_payment.php', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    item: selectedItem,
+    desc: selectedDesc,
+    price: selectedPrice,
+    method: paymentMethod.value,
+    trans_num: transactionInput.value.trim()
+  })
+})
+.then(response => response.json())
+.then(data => {
+  // Optionally handle result, e.g., show a message or handle errors.
+  if (data.status === "success") {
+    // continue as normal
+  } else {
+    alert("Payment not saved: " + data.message);
+  }
+})
+.catch(() => alert("Error connecting to server. Payment not saved."));
+
+    function showProcessedMessage(itemName) {
+      processedText.textContent = `Your order for "${itemName}" was processed successfully! Enjoy your coffee.`;
+      orderProcessed.style.display = 'block';
+      setTimeout(function() {
+        orderProcessed.style.display = 'none';
+      }, 1200);
+    }
+
+    function closeReceiptModal() {
+      receiptModal.style.display = 'none';
+    }
+    // Modal background close
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closePaymentModal();
+    });
+    receiptModal.addEventListener('click', function(e) {
+      if (e.target === receiptModal) closeReceiptModal();
+    });
+  </script>
+</body> 
+</html>
